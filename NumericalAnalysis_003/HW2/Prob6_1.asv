@@ -1,0 +1,19 @@
+close;
+clear;
+clc;
+
+x0 = 0.5; % guess
+x1 = sin(sqrt(x0));
+ea = abs((x1-x0)/x1)*100;
+es = ea*0.001/100;
+while ea > es
+
+    x0 = x1;
+
+    x1 = 2*sin(sqrt(x1));
+
+    ea = abs((x1-x0)/x1)*100;
+    
+    fprintf("no%d : root is at x = 
+end
+fprintf('root is at x = %2.5f',x1);
