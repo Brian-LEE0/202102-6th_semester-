@@ -42,21 +42,50 @@ NODE* SearchBST(NODE* root, char key)
 	else
 		return root;
 }
-
-NODE* _insert(BST_TREE* tree, NODE* root, NODE* newPtr)
+NODE* _insert(BST_TREE* tree, NODE* root, NODE* newPtr, int code)
 {
-	if (!root) // if NULL tree
-		return newPtr;
-	if (tree->compare(newPtr->dataPtr, root->dataPtr) < 0) {
-		root->left = _insert(tree, root->left, newPtr);
-		return root;
+	printf("case : %c code : %d\n", *(char*)(newPtr->dataPtr), code);
+	code++; // empty node code;
+	char temp[20], bin[20];
+	int r, i = 0;
+	while (1) {
+		r = code % 2;
+		code /= 2;
+		temp[i++] = '0' + r;
+		if (code <= 0) break;
+	}// DEC to BIN
+
+	for (int j = --i; j >= 0; j--) {
+		bin[i - j] = temp[j];
+		printf("bin : %c\n", bin[i - j]);
+	}// reverse str;
+
+	printf(" i : %d", i);
+	for (int j = i-1; j >= 0; j--) {
+		if (j == 0) {
+			if (bin[i] == '0') {
+				root->left = newPtr;
+				printf("%p good 3\n", root->left);
+			}
+			else
+			{
+				root->right = newPtr;
+				printf("%p good 4\n", root->right);
+
+			}
+			return newPtr;
+		}
+		if (bin[i - j] == '0') {
+			printf("%p good 1\n", root->left);
+			root = root->left;
+		}
+		else
+		{
+			printf("%p good 2\n", root->right);
+			root = root->right;
+
+		}
 	}
-	else {
-		// new data >= root data
-		root->right = _insert(tree, root->right, newPtr);
-		return root;
-	}
-	return root;
 } // _insert
 
 bool BST_Insert(BST_TREE* tree, void* dataPtr)
@@ -74,7 +103,7 @@ bool BST_Insert(BST_TREE* tree, void* dataPtr)
 	if (tree->count == 0)
 		tree->root = newPtr;
 	else
-		_insert(tree, tree->root, newPtr);
+		_insert(tree, tree->root, newPtr, tree->count);
 	(tree->count)++;
 
 	return true;
@@ -82,7 +111,6 @@ bool BST_Insert(BST_TREE* tree, void* dataPtr)
 
 void* _retrieve(BST_TREE* tree, void* dataPtr, NODE* root)
 {
-	printf("***%c\n", *(char*)root->dataPtr);
 	if (root) {
 		if (tree->compare(dataPtr, root->dataPtr) < 0)
 			return _retrieve(tree, dataPtr, root->left);
@@ -101,7 +129,7 @@ void* BST_Retrieve(BST_TREE* tree, void* keyPtr)
 		return _retrieve(tree, keyPtr, tree->root);
 	else
 		return NULL;
-} // BST_Retrieve 
+} // BST_Retrieve
 
 void printCha(void* stuPtr)
 {
@@ -159,7 +187,7 @@ void BST_Inorder(BST_TREE* tree) {
 //	Queue* queue = NULL;
 //	if (root == NULL)
 //		return;
-//	queue = CreateQueue(¡¦);
+//	queue = CreateQueue(ï¿½ï¿½);
 //	while (root) {
 //		Process(root
 //			->data);
