@@ -11,3 +11,4 @@ A = [10 2 -1;-3 -5 2;1 1 6];
 b = [27;-61.5;-21.5];
 
 x = GaussNaive(A,b)
+x2 = GaussPivot(A,b)
