@@ -1,12 +1,7 @@
 #pragma warning(disable:4996)
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
+#include "./Tree_Queue.h"
 
 int compare(void* argu1, void* argu2);
-
-
 
 typedef struct Node {
 	void* dataPtr;
@@ -44,7 +39,6 @@ NODE* SearchBST(NODE* root, char key)
 }
 NODE* _insert(BST_TREE* tree, NODE* root, NODE* newPtr, int code)
 {
-	printf("case : %c code : %d\n", *(char*)(newPtr->dataPtr), code);
 	code++; // empty node code;
 	char temp[20], bin[20];
 	int r, i = 0;
@@ -53,39 +47,33 @@ NODE* _insert(BST_TREE* tree, NODE* root, NODE* newPtr, int code)
 		code /= 2;
 		temp[i++] = '0' + r;
 		if (code <= 0) break;
-	}// DEC to BIN
+	}// DEC to BIN(reversed)
 
 	for (int j = --i; j >= 0; j--) {
 		bin[i - j] = temp[j];
-		printf("bin : %c\n", bin[i - j]);
-	}// reverse str;
+	}// BIN(reversed) to BIN(Normal)
 
-	printf(" i : %d", i);
-	for (int j = i-1; j >= 0; j--) {
+	for (int j = i - 1; j >= 0; j--) {
 		if (j == 0) {
 			if (bin[i] == '0') {
 				root->left = newPtr;
-				printf("%p good 3\n", root->left);
 			}
 			else
 			{
 				root->right = newPtr;
-				printf("%p good 4\n", root->right);
 
 			}
 			return newPtr;
 		}
 		if (bin[i - j] == '0') {
-			printf("%p good 1\n", root->left);
 			root = root->left;
 		}
 		else
 		{
-			printf("%p good 2\n", root->right);
 			root = root->right;
 
 		}
-	}
+	} // Find path using Huffman Code;
 } // _insert
 
 bool BST_Insert(BST_TREE* tree, void* dataPtr)
@@ -131,6 +119,23 @@ void* BST_Retrieve(BST_TREE* tree, void* keyPtr)
 		return NULL;
 } // BST_Retrieve
 
+void _destroyNodes(NODE* root) {
+
+	if (root == NULL) return;
+	_destroyNodes(root->left);
+	_destroyNodes(root->right);
+	free(root);
+}
+
+void BST_Destroy(BST_TREE* tree) {
+	if (tree == NULL || tree->root == NULL) {
+		return;
+	}
+	_destroyNodes(tree->root);
+	free(tree);
+}
+
+
 void printCha(void* stuPtr)
 {
 	char str = *(char*)stuPtr;
@@ -164,6 +169,16 @@ void _Inorder(NODE* root)
 
 }
 
+void _BreadthFirst(NODE* root, int count)
+{
+	if (root == NULL)
+		return;
+	_Inorder(root->left);
+	printCha(root->dataPtr);
+	_Inorder(root->right);
+
+}
+
 void BST_Postorder(BST_TREE* tree) {
 	_Postorder(tree->root);
 	return;
@@ -179,30 +194,29 @@ void BST_Inorder(BST_TREE* tree) {
 	return;
 }
 
+void LevelOrder(NODE* root) {
+	Queue* queue = NULL;
+	if (root == NULL)
+		return;
+	queue = CreateQueue(100);
+	while (root) {
+		printCha(root->dataPtr);
+		if (root->left)
+			EnQueue(queue, root->left);
+		if (root->right)
+			EnQueue(queue, root->right);
+		if (!isEmpty(queue))
+			root = DeQueue(queue);
+		else
+			root = NULL;
+	}
+	DestroyQueue(queue);
+}
 
-
-//void breadthFirst(NODE* root)
-//
-//void LevelOrder(TreeNode* root) {
-//	Queue* queue = NULL;
-//	if (root == NULL)
-//		return;
-//	queue = CreateQueue(��);
-//	while (root) {
-//		Process(root
-//			->data);
-//		if (root->left)
-//			Enqueue(queue, root->left);
-//		if (root->right)
-//			Enqueue(queue, root->right);
-//		if (!IsEmptyQueue(queue))
-//			root = Dequeue(queue);
-//		else
-//			root = NULL;
-//	}
-//	DestroyQueue(queue);
-//}
-
+void BST_BreadthFirst(BST_TREE* tree) {
+	LevelOrder(tree->root);
+	return;
+}
 
 int compare(void* argu1, void* argu2)
 {

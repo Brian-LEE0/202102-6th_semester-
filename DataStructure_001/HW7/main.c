@@ -1,35 +1,30 @@
-
 #include "./Binary_Tree.h"
 
-
 int main(int argc, char* argv[]) {
-	BST_TREE* Tree = BST_Create(1);
-	char a = 'a';
-	char b = 'a'+1;
-	char c = 'c';
-	char d = 'd';
-	char e = 'e';
-	char f = 'f';
-	char g = 'g';
-	BST_Insert(Tree, &a);
-	BST_Insert(Tree, &b);
-	BST_Insert(Tree, &c);
-	BST_Insert(Tree, &d);
-	BST_Insert(Tree, &e);
-	BST_Insert(Tree, &f);
-	BST_Insert(Tree, &g);
-
-	BST_Retrieve(Tree, &d);
-
-
-	printf("Postorder : ");
-	BST_Postorder(Tree);
+	BST_TREE* Tree = BST_Create(true);
+	char input[100];
+	printf("input a string : ");
+	scanf(" %[^\n]s", input);
 	printf("\n");
-	printf("Inorder : ");
-	BST_Inorder(Tree);
-	printf("\n");
-	printf("Preorder : ");
+	int i = 0;
+	while (input[i] != '\0') {
+		BST_Insert(Tree, &(input[i]));
+		i++;
+	}
+	
+	printf("Pre-order : ");
 	BST_Preorder(Tree);
-	printf("\n");
+	printf("\n\n");
+	printf("In-order : ");
+	BST_Inorder(Tree);
+	printf("\n\n");
+	printf("Post-order : ");
+	BST_Postorder(Tree);
+	printf("\n\n");
+	printf("Breadth_First : ");
+	BST_BreadthFirst(Tree);
+	printf("\n\n");
+	
+	BST_Destroy(Tree);
 
 }

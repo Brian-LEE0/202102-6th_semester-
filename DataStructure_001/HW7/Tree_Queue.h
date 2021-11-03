@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-typedef char* Element;
+typedef void* Element;
 
 typedef struct QueueNode{
-	Element data;
+	Element* data;
 	struct QueueNode* next;
 }QueueNode;
 
@@ -33,9 +33,7 @@ void EnQueue(Queue* pQueue, Element data) {
 	if (pNewNode == NULL)
 		return;
 
-	pNewNode->data = (char*)malloc((strlen(data)+1)*sizeof(char));
-
-	strcpy(pNewNode->data, data);
+	pNewNode->data = data;
 	pNewNode->next = NULL;
 
 	if (pQueue->count == 0) {
@@ -49,15 +47,14 @@ void EnQueue(Queue* pQueue, Element data) {
 	pQueue->count++;
 }
 
-char* DeQueue(Queue* pQueue,char* input_data) {
+Element DeQueue(Queue* pQueue) {
 
 	QueueNode* temp = NULL;
-
+	Element* DQresult = NULL;
 	if (pQueue->count == 0) {
 		return NULL;
 	}
-
-	strcpy(data, pQueue->front->data);
+	DQresult = pQueue->front->data;
 	temp = pQueue->front;
 
 	if (pQueue->count == 1) {
@@ -68,7 +65,7 @@ char* DeQueue(Queue* pQueue,char* input_data) {
 	}
 	free(temp);
 	pQueue->count--;
-	return data;
+	return DQresult;
 
 }
 
@@ -85,7 +82,7 @@ int isEmpty(Queue* pQueue) {
 	}
 }
 
-void DistroyQueue(Queue* pQueue) {
+void DestroyQueue(Queue* pQueue) {
 	QueueNode* temp;
 	while (pQueue->count > 0) {
 		temp = pQueue->front;
@@ -96,22 +93,4 @@ void DistroyQueue(Queue* pQueue) {
 	}
 	free(pQueue);
 	return;
-}
-
-void printallQueue(Queue* pQueue) {
-	QueueNode* temp;
-	if (pQueue->count == 0) {
-		return;
-	}
-	printf("(");
-	temp = pQueue->front;
-	for (int i = 0; i < pQueue->count; i++) {
-		printf("%s", temp->data);
-		temp = temp->next;
-		printf("%d", i + 1);
-		if (i != (pQueue->count - 1)) {
-			printf(", ");
-		}
-	}
-	printf(")\n");
 }
