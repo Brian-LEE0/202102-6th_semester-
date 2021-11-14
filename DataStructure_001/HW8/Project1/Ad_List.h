@@ -1,7 +1,9 @@
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "Graph_Queue.h"
 
 int compare(void* argu1, void* argu2);
 
@@ -16,9 +18,8 @@ typedef struct {
 typedef struct vertex {
 	struct vertex* pNewVertex;
 	void* dataPtr;
-	int inDegree;
-	int outDegree;
 	short processed;
+	short processed2;
 	struct arc* pArc;
 }VERTEX;
 
@@ -40,7 +41,7 @@ GRAPH* CreateGraph(int c) {
 }
 
 VERTEX* _retrieveVertex(GRAPH* graph, void* data, VERTEX** pvtPre) { // find the vertex address
-	VERTEX* temp = NULL, *tempPre = NULL;
+	VERTEX* temp = NULL, * tempPre = NULL;
 	if (graph == NULL || graph->first == NULL) {
 		return NULL;
 	}
@@ -58,6 +59,10 @@ VERTEX* _retrieveVertex(GRAPH* graph, void* data, VERTEX** pvtPre) { // find the
 }
 
 void InsertVertex(GRAPH* graph, void* data) {
+	VERTEX* temp;
+
+	if (_retrieveVertex(graph, data, &temp) != NULL) return;
+
 	VERTEX* pNewVertex = (VERTEX*)malloc(sizeof(VERTEX));
 	if (pNewVertex == NULL) {
 		return;
@@ -65,7 +70,7 @@ void InsertVertex(GRAPH* graph, void* data) {
 
 	pNewVertex->pNewVertex = NULL;
 	pNewVertex->dataPtr = data;
-	pNewVertex->inDegree = pNewVertex->outDegree = pNewVertex->processed = 0;
+	pNewVertex->processed = pNewVertex->processed2 = 0;
 	pNewVertex->pArc = NULL;
 
 	if (graph->first == NULL) {
@@ -98,7 +103,7 @@ void InsertVertex(GRAPH* graph, void* data) {
 	return;
 }
 
-void InsertArc(GRAPH* graph, void* data1, void* data2) {
+void InsertEdge(GRAPH* graph, void* data1, void* data2) { // data1 == source data2 == direction;
 	VERTEX* temp = NULL;
 	VERTEX* vt1 = _retrieveVertex(graph, data1, &temp);
 	VERTEX* vt2 = _retrieveVertex(graph, data2, &temp);
@@ -106,10 +111,10 @@ void InsertArc(GRAPH* graph, void* data1, void* data2) {
 
 	ARC* tempArc = NULL;
 
-	ARC* arc1 = (ARC*)malloc(sizeof(ARC));
+	/*ARC* arc1 = (ARC*)malloc(sizeof(ARC));
 	if (arc1 == NULL) return;
 	arc1->destination = vt1;
-	arc1->pNextArc = NULL;
+	arc1->pNextArc = NULL;*///if undirected graph
 
 	ARC* arc2 = (ARC*)malloc(sizeof(ARC));
 	if (arc2 == NULL) return;
@@ -132,7 +137,7 @@ void InsertArc(GRAPH* graph, void* data1, void* data2) {
 		}
 	}
 
-	if (vt2->pArc == NULL) {
+	/*if (vt2->pArc == NULL) {
 		vt2->pArc = arc1;
 	}
 	else {
@@ -146,14 +151,14 @@ void InsertArc(GRAPH* graph, void* data1, void* data2) {
 				tempArc = tempArc->pNextArc;
 			}
 		}
-	}
+	}*/ //if undirected graph
 	return;
 
 }
 
 
 void _DeleteEdge(GRAPH* graph, VERTEX* origin_vt, VERTEX* delete_vt) {
-	ARC* tempPre = NULL, *tempNow = NULL;
+	ARC* tempPre = NULL, * tempNow = NULL;
 	tempPre = tempNow = origin_vt->pArc;
 	if (origin_vt->pArc->destination == delete_vt) {
 		origin_vt->pArc = tempNow->pNextArc;
@@ -161,7 +166,6 @@ void _DeleteEdge(GRAPH* graph, VERTEX* origin_vt, VERTEX* delete_vt) {
 	while (tempNow != NULL) {
 		if (!(graph->compare)(tempNow->destination->dataPtr, delete_vt->dataPtr)) {
 			tempPre->pNextArc = tempNow->pNextArc;
-			printf("success\n");
 			free(tempNow);
 			return;
 		}
@@ -174,26 +178,32 @@ void _DeleteEdge(GRAPH* graph, VERTEX* origin_vt, VERTEX* delete_vt) {
 }
 
 
-void DeleteVertex(GRAPH* graph,void* data) {
+void DeleteVertex(GRAPH* graph, void* data) {
 	VERTEX* pvtPre = NULL;
-	VERTEX* vt = _retrieveVertex(graph,data,&pvtPre);
+	VERTEX* vt = _retrieveVertex(graph, data, &pvtPre);
 	if (graph == NULL || vt == NULL) return;
-	ARC* temp = NULL;
+	ARC* temp = NULL, * temp2 = NULL;
 	VERTEX* tempVT = NULL;
-	temp = vt->pArc;
-	printf("%c", *(char*)temp->destination->dataPtr);
+	/*temp = vt->pArc;
 	while (temp != NULL) {
-		printf("%p apapap\n", temp);
+		printf("vt : %c des : %c\n", *(element*)(vt->dataPtr), *(element*)(temp->destination->dataPtr));
 		_DeleteEdge(graph, temp->destination, vt);
 		temp = temp->pNextArc;
+	}*/ //if undirected graph
+	temp = vt->pArc;
+	while (temp != NULL) {
+		temp2 = temp->pNextArc;
+		_DeleteEdge(graph, vt, temp->destination);
+		temp = temp2;
 	}
+
 	pvtPre->pNewVertex = vt->pNewVertex;
 	free(vt);
 	graph->count--;
 	return;
 }
 
-void travel(GRAPH* graph) {
+void traversalGraph(GRAPH* graph) {
 	VERTEX* tempNow = NULL;
 	ARC* temp = NULL;
 	tempNow = graph->first;
@@ -209,7 +219,64 @@ void travel(GRAPH* graph) {
 	}
 }
 
+void DestroyGraph(GRAPH* graph) {
+	VERTEX* t1, * t2;
+	t1 = graph->first;
+	while(graph->count != 0) {
+		t2 = t1->pNewVertex;
+		DeleteVertex(graph, t1->dataPtr);
+		graph->first = t1 = t2;
+	}
+	free(graph);
+}
 
 int compare(void* argu1, void* argu2) {
 	return (*(element*)argu1) - (*(element*)argu2);
+}
+
+void DepthFirstTraversal(GRAPH* graph, void* rootdataPtr, void (*process)(void* dataPtr))
+{
+	VERTEX* temp;
+	VERTEX* root = _retrieveVertex(graph, rootdataPtr, &temp);
+
+	ARC* arc = NULL;
+	if (root->processed)
+		return;
+	(*process)(root->dataPtr);
+	root->processed = true;
+	for (arc = root->pArc; arc != NULL; arc = arc->pNextArc) {
+		if (!arc->destination->processed)
+			DepthFirstTraversal(graph,arc->destination->dataPtr, process);
+	}
+}
+
+void BreadthFirstTraversal(GRAPH* graph,void* rootdataPtr, void (*process)(void* dataPtr))
+{
+	VERTEX* temp;
+	VERTEX* root = _retrieveVertex(graph, rootdataPtr, &temp);
+	
+	Queue* queue = NULL;
+	ARC* arc = NULL;
+	if (root == NULL)
+		return;
+	queue = CreateQueue(100);
+	while (root) {
+		
+		for (arc = root->pArc; arc != NULL; arc = arc->pNextArc) {
+			EnQueue(queue, (void*)(arc->destination));
+		}
+		if (!root->processed2) {
+			(*process)(root->dataPtr);
+			root->processed2 = true;
+		}
+		
+		if (!isEmpty(queue)) {
+			root = (VERTEX*)DeQueue(queue);
+		}
+		else {
+			root = NULL;
+		}
+		
+		
+	}
 }
