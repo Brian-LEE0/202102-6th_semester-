@@ -1,4 +1,3 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -222,7 +221,7 @@ void traversalGraph(GRAPH* graph) {
 void DestroyGraph(GRAPH* graph) {
 	VERTEX* t1, * t2;
 	t1 = graph->first;
-	while(graph->count != 0) {
+	while (graph->count != 0) {
 		t2 = t1->pNewVertex;
 		DeleteVertex(graph, t1->dataPtr);
 		graph->first = t1 = t2;
@@ -246,22 +245,22 @@ void DepthFirstTraversal(GRAPH* graph, void* rootdataPtr, void (*process)(void* 
 	root->processed = true;
 	for (arc = root->pArc; arc != NULL; arc = arc->pNextArc) {
 		if (!arc->destination->processed)
-			DepthFirstTraversal(graph,arc->destination->dataPtr, process);
+			DepthFirstTraversal(graph, arc->destination->dataPtr, process);
 	}
 }
 
-void BreadthFirstTraversal(GRAPH* graph,void* rootdataPtr, void (*process)(void* dataPtr))
+void BreadthFirstTraversal(GRAPH* graph, void* rootdataPtr, void (*process)(void* dataPtr))
 {
 	VERTEX* temp;
 	VERTEX* root = _retrieveVertex(graph, rootdataPtr, &temp);
-	
+
 	Queue* queue = NULL;
 	ARC* arc = NULL;
 	if (root == NULL)
 		return;
 	queue = CreateQueue(100);
 	while (root) {
-		
+
 		for (arc = root->pArc; arc != NULL; arc = arc->pNextArc) {
 			EnQueue(queue, (void*)(arc->destination));
 		}
@@ -269,14 +268,14 @@ void BreadthFirstTraversal(GRAPH* graph,void* rootdataPtr, void (*process)(void*
 			(*process)(root->dataPtr);
 			root->processed2 = true;
 		}
-		
+
 		if (!isEmpty(queue)) {
 			root = (VERTEX*)DeQueue(queue);
 		}
 		else {
 			root = NULL;
 		}
-		
-		
+
+
 	}
 }

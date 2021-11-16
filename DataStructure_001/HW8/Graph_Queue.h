@@ -1,10 +1,11 @@
 #pragma once
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-typedef struct QueueNode{
+typedef struct QueueNode {
 	void* data;
 	struct QueueNode* next;
 }QueueNode;

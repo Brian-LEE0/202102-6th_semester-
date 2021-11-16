@@ -20,10 +20,11 @@ int main() {
 	str[0] = '\0';
 	printf("File name of graph : ");
 	scanf(" %[^\n]s", filename);
-
 	fpin = fopen(filename, "r");
-	if (fpin == NULL) return -1;
 
+	if (fpin == NULL) {
+		return -1;
+	}
 	printf("\nThe graph is : \n");
 	while (fgets(buf2, MAX_LAN, fpin) != NULL) {
 		if (count == 0) { // starting point;
@@ -104,6 +105,9 @@ int main() {
 	traversalGraph(graph);
 	printf("\n\nMinimum spanning tree : \n");
 	MinimumSpanningTree(graph, &start, print);
+
+	printf("\n\nShortest path from %c  : \n\n",start);
+	ShortestPath(graph, &start, print);
 	DestroyGraph(graph);
 
 	printf("\n\n");
