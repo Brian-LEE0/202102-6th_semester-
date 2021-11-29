@@ -48,14 +48,14 @@ bool isEmpty(SPACE* space) {
 	return false;
 }
 
-bool SaveData(SPACE* space, element data, int SavePoint) {
+bool SaveData(SPACE* space, element data) {
 	if (!space) {
 		return false;
 	}
 	if (isFull(space)) {
 		return false;
 	}
-	if (space->size <= SavePoint) {
+	if (space->size <= space->count) {
 		return false;
 	}
 	element* newData = (element*)malloc(sizeof(element));
@@ -76,7 +76,6 @@ bool DestroySpace(SPACE* space) {
 bool _BinarySearchAlgorithm(SPACE* space, int begin, int end, element target) {
 	if (begin > end) return false;
 	int mid = (begin + end) / 2;
-	printf("%d %d %d\n", *(element*)space->main_memory[begin].dataPtr, *(element*)space->main_memory[mid].dataPtr, *(element*)space->main_memory[end].dataPtr);
 	if (!(*space->compare)(space->main_memory[mid].dataPtr, &target)) {
 		return true;
 	}
@@ -88,7 +87,7 @@ bool _BinarySearchAlgorithm(SPACE* space, int begin, int end, element target) {
 	}
 }
 
-bool BinarySearch(SPACE* space, element target) {
+bool Search(SPACE* space, element target) {
 	if (!space) return false;
 	if (isEmpty(space)) return false;
 	_BinarySearchAlgorithm(space, 0, space->count-1, target);
