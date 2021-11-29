@@ -3,7 +3,7 @@
 
 int compare(void* argu1, void* argu2);
 
-int main(int argc, char* argv[]) {
+int __main(int argc, char* argv[]) {
 	SPACE* space = CreateSpace(10000, compare);
 	if (!space) {
 		return -1;

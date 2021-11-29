@@ -1,42 +1,18 @@
-#pragma once
-#define_CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+#include "Structure.h"
 
-int compare(void* argu1, void* argu2);
-
-typedef int element;
-
-typedef struct space {
-	int (*compare)(void* argu1, void* argu2);
-	int count;
-	int size;
-	struct memory* main_memory;
-}SPACE;
-
-typedef struct memory {
-	void* dataPtr;
-}MEMORY;
-
-int _HashingFunction(SPACE* space, element key, int memory_size_digit) {//
+int _HashingFunction(SPACE* space, element key, int memory_size_digit) {
 	int hashed_result = 0;
 	key = (int)pow(key, 2); // key square
 	for (int i = 0; i < memory_size_digit; i++) {
 		hashed_result += (key % 10) * ((int)pow(10, i));
 		key /= 10;
 	}
-
-	if (hashed_result == 0) {
-		hashed_result = 13;
-	}
 	if (hashed_result >= space->size) {
-		hashed_result = _HashingFunction(space, hashed_result, memory_size_digit);
+		hashed_result = _HashingFunction(space, hashed_result + 1, memory_size_digit);
 	}
 	return hashed_result;
 
-}
+}// making hasing number
 
 int _num_of_digit(int n) {
 	if (n == 0) {
@@ -48,7 +24,7 @@ int _num_of_digit(int n) {
 	return 0;
 }
 
-SPACE* CreateSpace(int size, int (*compare)(void* argu1, void* argu2)) {
+SPACE* H_CreateSpace(int size, int (*compare)(void* argu1, void* argu2)) {
 	SPACE* pNewSpace = (SPACE*)malloc(sizeof(SPACE));
 	if (!pNewSpace) return NULL;
 	pNewSpace->main_memory = (MEMORY*)malloc(sizeof(MEMORY) * size);
@@ -62,7 +38,7 @@ SPACE* CreateSpace(int size, int (*compare)(void* argu1, void* argu2)) {
 	return pNewSpace;
 }
 
-bool isFull(SPACE* space) {
+bool H_isFull(SPACE* space) {
 	if (!space->main_memory) {
 		return true;
 	}
@@ -72,29 +48,30 @@ bool isFull(SPACE* space) {
 	return false;
 }
 
-bool isEmpty(SPACE* space) {
+bool H_isEmpty(SPACE* space) {
 	if (!space->main_memory) return true;
 	if (space->count == 0) return true;
 	return false;
 }
 
-bool SaveData(SPACE* space, element data) {
+bool H_SaveData(SPACE* space, element data) {
 	if (!space) {
 		return false;
 	}
-	if (isFull(space)) {
+	if (H_isFull(space)) {
 		return false;
 	}
 	int address = _HashingFunction(space, data, _num_of_digit(space->size - 1));
-
+	
 	while (1) {
 		if (space->main_memory[address].dataPtr != NULL) {
-			address = _HashingFunction(space, address, _num_of_digit(space->size - 1));
+			address = _HashingFunction(space, address+1, _num_of_digit(space->size - 1));
 		}
 		else {
 			break;
 		}
 	}
+	
 
 	element* newData = (element*)malloc(sizeof(element));
 	if (!newData) return false;
@@ -104,19 +81,21 @@ bool SaveData(SPACE* space, element data) {
 	return true;
 }
 
-bool DestroySpace(SPACE* space) {
+bool H_DestroySpace(SPACE* space) {
 	if (!space) return false;
 	for (int i = 0; i < space->size; i++) {
 		if (space->main_memory[i].dataPtr) {
 			free(space->main_memory[i].dataPtr);
 		}
 	}
+	free(space->main_memory);
+	free(space);
 }
 
 
-bool Search(SPACE* space, element target) {
+bool H_Search(SPACE* space, element target) {
 	if (!space)	return false;
-	if (isEmpty(space)) return false;
+	if (H_isEmpty(space)) return false;
 	int address = _HashingFunction(space, target, _num_of_digit(space->size - 1));
 	while (1) {
 		if (space->main_memory[address].dataPtr == NULL) {
@@ -126,7 +105,7 @@ bool Search(SPACE* space, element target) {
 		if ((*space->compare)(space->main_memory[address].dataPtr, &target) == 0) {
 			return true;
 		}else {
-			address = _HashingFunction(space, address, _num_of_digit(space->size - 1));
+			address = _HashingFunction(space, address+1, _num_of_digit(space->size - 1));
 		}
 	}
 }

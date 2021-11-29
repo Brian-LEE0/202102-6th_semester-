@@ -21,5 +21,6 @@ int main() {
 		printf("%d : %d\n", i, temp);
 		fprintf(fout, "%d\n", temp);
 	}
+	fclose(fout);
 	return 0;
 }

@@ -56,7 +56,7 @@ void bubbleSort(int list[], int n)
 void quicksort(int list[], int left, int right)
 {
 	int pivot = 0, i = 0, j = 0;
-	// It is assumed that list[left].key <= llist[right+1].key
+	// It is assumed that list[left].key <= list[right+1].key
 	if (left < right) {
 		i = left; j = right + 1;
 		pivot = list[left];
@@ -70,22 +70,25 @@ void quicksort(int list[], int left, int right)
 			if (i < j)
 				swap(&list[i], &list[j]);
 		} while (i < j);
-	}
+	
 	swap(&list[left], &list[j]);
 	quicksort(list, left, j - 1);
 	quicksort(list, j + 1, right);
+	}
 }
 
 void Merge(int list[], int sorted[], int i, int m, int n)
 {
-	int j, k, t;
+	int j, k, t, low = i;
 	j = m + 1;
 	k = i;
 	while (i <= m && j <= n) {
-		if (list[i] < list[j])
+		if (list[i] < list[j]){
 			sorted[k++] = list[i++];
-		else
+		}
+		else {
 			sorted[k++] = list[j++];
+		}
 	}
 	if (i > m) { // All elements in left list are copied
 		for (t = j; t <= n; t++) // copy remained elements in right list
@@ -95,7 +98,8 @@ void Merge(int list[], int sorted[], int i, int m, int n)
 		for (t = i; t <= m; t++)// copy remained elements in left list
 			sorted[k + t - i] = list[t];
 	}
-
+	for (int a = low; a <= n; a++)
+		list[a] = sorted[a];
 }
 
 void MergeSort(int list[], int sorted[], int low, int high) {
@@ -109,7 +113,7 @@ void MergeSort(int list[], int sorted[], int low, int high) {
 
 void Sort(int list[], int sizeof_list) {
 	int* sorted_list = NULL;
-	printf("\n\n a sorting method to use(Selection : 0, Insertion : 1, Bubble : 2, Quick : 3, Merge : 4 ) :");
+	printf("\n\nChoose a sorting method to use(Selection : 0, Insertion : 1, Bubble : 2, Quick : 3, Merge : 4 ) : ");
 	int select;
 	scanf("%d", &select);
 	switch (select) {
@@ -123,19 +127,22 @@ void Sort(int list[], int sizeof_list) {
 		bubbleSort(list, sizeof_list);
 		break;
 	case 3:
-		quicksort(list, 0, sizeof_list);
+		quicksort(list, 0, sizeof_list-1);
 		break;
 	case 4:
-		sorted_list = (int*)malloc(sizeof(int) * sizeof_list);
-		MergeSort(list, sorted_list, 0, sizeof_list);
-		for (int i = 0; i < sizeof_list; i++)
+		sorted_list = (int*)calloc(sizeof_list,sizeof(int));
+		MergeSort(list, sorted_list, 0, sizeof_list-1);
+		
+		for (int i = 0; i < sizeof_list; i++) {
 			list[i] = sorted_list[i];
+		}
 		free(sorted_list);
 		break;
 	default:
 		Sort(list, sizeof_list);
 		return;
 	}
+	printf("\n");
 	printf("The numbers sorted : ");
 	for (int i = 0; i < sizeof_list; i++) {
 		printf("%d", list[i]);

@@ -1,25 +1,7 @@
-#pragma once
-#define_CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "Structure.h"
 
-int compare(void* argu1, void* argu2);
 
-typedef int element;
-
-typedef struct space {
-	int (*compare)(void* argu1, void* argu2);
-	int count;
-	int size;
-	struct memory* main_memory;
-}SPACE;
-
-typedef struct memory {
-	void* dataPtr;
-}MEMORY;
-
-SPACE* CreateSpace(int size) {
+SPACE* B_CreateSpace(int size, int (*compare)(void* argu1, void* argu2)) {
 	SPACE* pNewSpace = (SPACE*)malloc(sizeof(SPACE));
 	if (!pNewSpace) return NULL;
 	pNewSpace->main_memory = (MEMORY*)malloc(sizeof(MEMORY) * size);
@@ -33,7 +15,7 @@ SPACE* CreateSpace(int size) {
 	return pNewSpace;
 }
 
-bool isFull(SPACE* space) {
+bool B_isFull(SPACE* space) {
 	if (!space->main_memory) {
 		return true;
 	}
@@ -43,17 +25,17 @@ bool isFull(SPACE* space) {
 	return false;
 }
 
-bool isEmpty(SPACE* space) {
+bool B_isEmpty(SPACE* space) {
 	if (!space->main_memory) return true;
 	if (space->count == 0) return true;
 	return false;
 }
 
-bool SaveData(SPACE* space, element data) {
+bool B_SaveData(SPACE* space, element data) {
 	if (!space) {
 		return false;
 	}
-	if (isFull(space)) {
+	if (B_isFull(space)) {
 		return false;
 	}
 	if (space->size <= space->count) {
@@ -65,13 +47,15 @@ bool SaveData(SPACE* space, element data) {
 	space->main_memory[space->count++].dataPtr = (void*)newData;
 }
 
-bool DestroySpace(SPACE* space) {
+bool B_DestroySpace(SPACE* space) {
 	if (!space) return false;
-	for (int i = 0; i < space->size; i++) {
+	for (int i = 0; i < space->count; i++) {
 		if (space->main_memory[i].dataPtr) {
 			free(space->main_memory[i].dataPtr);
 		}
 	}
+	free(space->main_memory);
+	free(space);
 }
 
 bool _BinarySearchAlgorithm(SPACE* space, int begin, int end, element target) {
@@ -88,13 +72,8 @@ bool _BinarySearchAlgorithm(SPACE* space, int begin, int end, element target) {
 	}
 }
 
-bool Search(SPACE* space, element target) {
+bool B_Search(SPACE* space, element target) {
 	if (!space) return false;
-	if (isEmpty(space)) return false;
+	if (B_isEmpty(space)) return false;
 	_BinarySearchAlgorithm(space, 0, space->count-1, target);
-}
-
-
-int compare(void* argu1, void* argu2) {
-	return (*(element*)argu1) - (*(element*)argu2);
 }
