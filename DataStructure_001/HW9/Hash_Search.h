@@ -1,4 +1,5 @@
 #pragma once
+#define_CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -26,7 +27,7 @@ int _HashingFunction(SPACE* space, element key, int memory_size_digit) {//
 		hashed_result += (key % 10) * ((int)pow(10, i));
 		key /= 10;
 	}
-	
+
 	if (hashed_result == 0) {
 		hashed_result = 13;
 	}
@@ -85,7 +86,7 @@ bool SaveData(SPACE* space, element data) {
 		return false;
 	}
 	int address = _HashingFunction(space, data, _num_of_digit(space->size - 1));
-	
+
 	while (1) {
 		if (space->main_memory[address].dataPtr != NULL) {
 			address = _HashingFunction(space, address, _num_of_digit(space->size - 1));
@@ -119,7 +120,7 @@ bool Search(SPACE* space, element target) {
 	int address = _HashingFunction(space, target, _num_of_digit(space->size - 1));
 	while (1) {
 		if (space->main_memory[address].dataPtr == NULL) {
-			
+
 			return false;
 		}
 		if ((*space->compare)(space->main_memory[address].dataPtr, &target) == 0) {
@@ -129,5 +130,3 @@ bool Search(SPACE* space, element target) {
 		}
 	}
 }
-
-

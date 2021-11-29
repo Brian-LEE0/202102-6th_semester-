@@ -1,7 +1,11 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+
+
 
 void swap(int* a, int* b) {
 	int temp = *a;
@@ -91,14 +95,57 @@ void Merge(int list[], int sorted[], int i, int m, int n)
 		for (t = i; t <= m; t++)// copy remained elements in left list
 			sorted[k + t - i] = list[t];
 	}
+
 }
 
-void MergeSort(int list[], int low, int high) {
+void MergeSort(int list[], int sorted[], int low, int high) {
 	if (low < high) {
 		int mid = (low + high) / 2;
-		MergeSort(list, low, mid);
-		MergeSort(list, mid + 1, high);
-		Merge(list, list, low, mid, high); // in place
+		MergeSort(list, sorted, low, mid);
+		MergeSort(list, sorted, mid + 1, high);
+		Merge(list, sorted, low, mid, high); // in place
 	}
 }
 
+void Sort(int list[], int sizeof_list) {
+	int* sorted_list = NULL;
+	printf("\n\n a sorting method to use(Selection : 0, Insertion : 1, Bubble : 2, Quick : 3, Merge : 4 ) :");
+	int select;
+	scanf("%d", &select);
+	switch (select) {
+	case 0:
+		selectionSort(list, sizeof_list);
+		break;
+	case 1:
+		insertionSort(list, sizeof_list);
+		break;
+	case 2:
+		bubbleSort(list, sizeof_list);
+		break;
+	case 3:
+		quicksort(list, 0, sizeof_list);
+		break;
+	case 4:
+		sorted_list = (int*)malloc(sizeof(int) * sizeof_list);
+		MergeSort(list, sorted_list, 0, sizeof_list);
+		for (int i = 0; i < sizeof_list; i++)
+			list[i] = sorted_list[i];
+		free(sorted_list);
+		break;
+	default:
+		Sort(list, sizeof_list);
+		return;
+	}
+	printf("The numbers sorted : ");
+	for (int i = 0; i < sizeof_list; i++) {
+		printf("%d", list[i]);
+		if (i != sizeof_list - 1) {
+			printf(", ");
+		}
+		else {
+			printf("\n");
+		}
+
+	}
+	return;
+}
